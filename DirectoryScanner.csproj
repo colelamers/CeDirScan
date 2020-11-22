@@ -48,16 +48,17 @@
   <ItemGroup>
     <Compile Include="BLL\BLLProcessing.cs" />
     <Compile Include="BLL\DebugLogging.cs" />
+    <Compile Include="BO\Configuration.cs" />
     <Compile Include="BO\DirectoryObjects.cs" />
     <Compile Include="DirectoryScanner.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="DirectoryScanner.Designer.cs">
       <DependentUpon>DirectoryScanner.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="DirectoryScanner.resx">
       <DependentUpon>DirectoryScanner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

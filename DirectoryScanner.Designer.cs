@@ -46,7 +46,7 @@
             // btnBrowse
             // 
             this.btnBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowse.Location = new System.Drawing.Point(351, 10);
+            this.btnBrowse.Location = new System.Drawing.Point(377, 10);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(84, 23);
             this.btnBrowse.TabIndex = 0;
@@ -58,9 +58,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsslStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 212);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 321);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(445, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(471, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -112,7 +112,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbDirectory.Location = new System.Drawing.Point(12, 12);
             this.tbDirectory.Name = "tbDirectory";
-            this.tbDirectory.Size = new System.Drawing.Size(333, 20);
+            this.tbDirectory.Size = new System.Drawing.Size(359, 20);
             this.tbDirectory.TabIndex = 5;
             // 
             // gbRadioButtons
@@ -130,7 +130,7 @@
             // btnGo
             // 
             this.btnGo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGo.Location = new System.Drawing.Point(351, 112);
+            this.btnGo.Location = new System.Drawing.Point(375, 39);
             this.btnGo.Name = "btnGo";
             this.btnGo.Size = new System.Drawing.Size(84, 23);
             this.btnGo.TabIndex = 7;
@@ -142,7 +142,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(445, 234);
+            this.ClientSize = new System.Drawing.Size(471, 343);
             this.Controls.Add(this.btnGo);
             this.Controls.Add(this.gbRadioButtons);
             this.Controls.Add(this.tbDirectory);
