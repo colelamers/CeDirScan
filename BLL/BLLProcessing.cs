@@ -10,75 +10,93 @@ namespace DirectoryScanner
 {
     public class BLLProcessing
     {
+        Configuration _config;
+        
+        List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
-
+            _config = _config.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
         }
 
-        List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
-        Configuration _config = Configuration.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
-
-        private void StartProcessing()
+        private List<DirectoryObjects> ScanDirectory()
         {
-            if (dirObjList.Count > 0) { dirObjList.Clear(); }//empties the list in case the data is pulled more than once in the same session, otherwise ignores this
+            List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
 
             try
             {
                 //TODO: get pathing and radio button to write to config file. then read in from the processing file
-                List<string> scannedItems = Directory.GetFiles(_config.Directory, "*.*", SearchOption.AllDirectories).ToList(); 
+                List<string> scannedItems = Directory.GetFiles(_config.DirectoryPath, "*.*", SearchOption.AllDirectories).ToList();
                 foreach (string si in scannedItems)
                 {
                     DirectoryObjects dirObj = new DirectoryObjects();
-                    dirObj.type = System.IO.Path.GetExtension(si);
-                    dirObj.path = System.IO.Path.GetDirectoryName(si);
-                    dirObj.name = System.IO.Path.GetFileNameWithoutExtension(si);
+                    dirObj.type = Path.GetExtension(si);
+                    dirObj.path = Path.GetDirectoryName(si);
+                    dirObj.name = Path.GetFileNameWithoutExtension(si);
                     dirObjList.Add(dirObj);
                 }//Gets the directory object and adds it to the list
+                SortList(dirObjList);
+                return dirObjList;
+            }
+            catch (Exception ex)
+            {
+                Log(ex.ToString());
+                return dirObjList;
+            }
+        }
 
-                //rbSort(gbRadioButtons); //TODO: Get this from config file
+        public void StartProcessing()
+        {
+            dirObjList.Clear();
+            dirObjList = ScanDirectory();
 
-                /*TODO This all needs to be in the DirectoryScanner.cs file because you cannot access these dialogs in the processing
+            try
+            {
+                SaveFileDialog sfdSaveFile = new SaveFileDialog();
                 sfdSaveFile.Filter = "Text File (*.txt)|*.txt|CSV File (*.csv)|*.csv|All Files (*.*)|*.*";
                 if (sfdSaveFile.ShowDialog() == DialogResult.OK)
                 {
-                    using (Stream stream = File.Open(sfdSaveFile.FileName, FileMode.OpenOrCreate))
+                    using (FileStream stream = new FileStream(sfdSaveFile.FileName, FileMode.Create, FileAccess.Write))
                     using (StreamWriter streamWriter = new StreamWriter(stream))
                     {
                         foreach (DirectoryObjects tObject in dirObjList)
                         {
-                            streamWriter.WriteLine($"{tObject.type}, {tObject.name}, {tObject.path}");
+                            streamWriter.WriteLine($"{tObject.type}, {tObject.path}, {tObject.name}");
                         }
                         streamWriter.Close();
                     }
                 }
-                */
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex}");
+                Log(ex.ToString());
             }
-
-
         }
 
-        private void rbSort(GroupBox g)
+
+        private List<DirectoryObjects> SortList(List<DirectoryObjects> dirOb)
         {
-            var checkedButton = g.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
-            switch (checkedButton.Text)
+            string sortingType = _config.Sort;
+            switch (sortingType)
             {
                 case "Name":
-                    dirObjList = dirObjList.OrderBy(ms => ms.name).ToList();
+                    dirOb = dirOb.OrderBy(ms => ms.name).ToList();
                     break;
                 case "File Path":
-                    dirObjList = dirObjList.OrderBy(ms => ms.path).ToList();
+                    dirOb = dirOb.OrderBy(ms => ms.path).ToList();
                     break;
                 case "File Type":
-                    dirObjList = dirObjList.OrderBy(ms => ms.type).ToList();
+                    dirOb = dirOb.OrderBy(ms => ms.type).ToList();
                     break;
             }//finds which is checked and updates the list to match the new format
+            Log("Sorting type: " + sortingType);
+            return dirOb;
+        }//Sorts the List
+
+        private void Log(string log)
+        {
+            DebugLogging.LogActivity(log);
         }
-
-
 
 
     }
