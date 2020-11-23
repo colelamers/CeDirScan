@@ -32,10 +32,8 @@ namespace DirectoryScanner
             //TODO: figure out how to get the file name here
         }
 
-        public Configuration LoadFromFile(string fileName)
+        public static Configuration LoadFromFile(string fileName)
         {
-            Save(fileName); //Calling Save function will create a file if one does not exist when a load is performed. This is to prevent an error from occuring that would make the whole program not work.
-
             using (var stream = new FileStream(fileName, FileMode.Open))
             {
                 var XML = new XmlSerializer(typeof(Configuration));

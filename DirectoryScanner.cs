@@ -18,7 +18,9 @@ namespace DirectoryScanner
         {
             InitializeComponent();
             DebugLogging.CreateDebugLogger();
-            _config = _config.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
+            string confignName = "configuration.xml";
+            _config.Save(confignName);
+            _config = Configuration.LoadFromFile(confignName); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
             ConfigCheck();
         }
 

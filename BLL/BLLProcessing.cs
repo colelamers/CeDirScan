@@ -15,7 +15,7 @@ namespace DirectoryScanner
         List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
-            _config = _config.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
+            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
         }
 
         private List<DirectoryObjects> ScanDirectory()
