@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Xml.Serialization;
 
 namespace DirectoryScanner
@@ -26,7 +21,7 @@ namespace DirectoryScanner
                 XmlSerializer XML = new XmlSerializer(typeof(Configuration));
                 XML.Serialize(stream, this);
             }
-            
+
         }//When called, saves the parameters set at that time from the config file
 
         public void GetConfigFileName()

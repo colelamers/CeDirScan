@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DirectoryScanner
 {
@@ -11,13 +7,14 @@ namespace DirectoryScanner
         public string path { get; set; }
         public string type { get; set; }
         public string name { get; set; }
-        public int size { get; set; }
-        public int getSizeOnDisk(string size)
+        public double size { get; set; }//set as double because of issue with division making too small of a number for int32 error and to get the Ceiling
+        public double getSizeOnDisk(string size)
         {
-            int divide = (int.Parse(size) / 1024);
+            double divide = Math.Ceiling(double.Parse(size) / 1024);
             return divide;
         }//modifies the size to not just be the bytes but the representation of the disk space
         
+
         public DirectoryObjects()
         {
             path = "";
