@@ -58,6 +58,7 @@ namespace DirectoryScanner
             }
             catch (Exception ex)
             {
+                //TODO: --1-- need to revise code so that when an access denied occurs, it just skips that file instead of stopping the whole program
                 Log($"Error: {ex}");
                 return dirObjList;
             }
