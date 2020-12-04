@@ -14,7 +14,8 @@ namespace DirectoryScanner
         List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
-            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: --3-- Figure out someway to make my own DLL for debuglogging and xml serialization
+            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: --1-- need to get this to be created on the constructor here 
+            //TODO: --3-- Figure out someway to make my own DLL for debuglogging and xml serialization
         }
 
         private List<DirectoryObjects> ScanDirectory()

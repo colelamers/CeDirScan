@@ -12,8 +12,8 @@ namespace DirectoryScanner
             InitializeComponent();
             DebugLogging.CreateDebugLogger();
             string confignName = "configuration.xml";
+            _config.Save(confignName); //This needs to be delcared here right now. The load cannot occur unless this gets saved on startup.
             _config = Configuration.LoadFromFile(confignName); //TODO: --3-- try to get config file and other things into their own dll i can use
-            //_config.Save(confignName); no idea why this is here right now. keeping just in case it was here for some reason
             ConfigCheck();
         }
 
