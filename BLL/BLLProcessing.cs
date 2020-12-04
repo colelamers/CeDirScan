@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,35 +12,56 @@ namespace DirectoryScanner
     public class BLLProcessing
     {
         Configuration _config;
-        
+
+
         List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
-            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: remove the hardcoded file name. Pass through whatever file name they change it to
+            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: --3-- Figure out someway to make my own DLL for debuglogging and xml serialization
         }
 
         private List<DirectoryObjects> ScanDirectory()
         {
-            List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
-
+            Log("Scanning Directory");
             try
             {
-                //TODO: get pathing and radio button to write to config file. then read in from the processing file
-                List<string> scannedItems = Directory.GetFiles(_config.DirectoryPath, "*.*", SearchOption.AllDirectories).ToList();
-                foreach (string si in scannedItems)
+                List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
+
+
+                List<string> subDirs = Directory.GetDirectories(_config.DirectoryPath).Select(d => new { Attr = new DirectoryInfo(d).Attributes, Dir = d })
+                      .Where(x => !x.Attr.HasFlag(FileAttributes.System))
+                      .Where(x => !x.Attr.HasFlag(FileAttributes.Hidden))
+                      .Select(x => x.Dir)
+                      .ToList();
+                //Gets a list of all directories except for hidden files
+
+                foreach (string dir in subDirs)
                 {
-                    DirectoryObjects dirObj = new DirectoryObjects();
-                    dirObj.type = Path.GetExtension(si);
-                    dirObj.path = Path.GetDirectoryName(si);
-                    dirObj.name = Path.GetFileNameWithoutExtension(si);
-                    dirObjList.Add(dirObj);
-                }//Gets the directory object and adds it to the list
-                SortList(dirObjList);
+
+                    List<string> filesInDirectory = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories).ToList();
+                    //Directory.GetFiles(...) returns only files, it does not get the directories. Directory.GetFileSystemEntries returns all folders too
+
+                    foreach (string file in filesInDirectory)
+                    {
+                        DirectoryObjects dirObj = new DirectoryObjects();
+                        FileInfo n = new FileInfo(file);
+                        dirObj.type = Path.GetExtension(file);
+                        dirObj.path = Path.GetDirectoryName(file);
+                        dirObj.name = Path.GetFileNameWithoutExtension(file);
+                        dirObj.size = dirObj.getSizeOnDisk(n.Length.ToString());
+                        dirObjList.Add(dirObj);
+                    }//Gets the directory object and adds it to the list
+                }//for every directory in the list
+
+                //TODO: --2-- If subDirs.Count == 0, then scan only files in list
+                dirObjList = SortList(dirObjList); //sorts the list
+
                 return dirObjList;
+
             }
             catch (Exception ex)
             {
-                Log(ex.ToString());
+                Log($"Error: {ex}");
                 return dirObjList;
             }
         }
@@ -60,7 +82,7 @@ namespace DirectoryScanner
                     {
                         foreach (DirectoryObjects tObject in dirObjList)
                         {
-                            streamWriter.WriteLine($"{tObject.type}, {tObject.path}, {tObject.name}");
+                            streamWriter.WriteLine($"{tObject.type}, {tObject.path}, {tObject.name}, {tObject.size}");
                         }
                         streamWriter.Close();
                     }
@@ -69,27 +91,56 @@ namespace DirectoryScanner
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex}");
-                Log(ex.ToString());
+                Log($"Error: {ex}");
             }
         }
 
 
         private List<DirectoryObjects> SortList(List<DirectoryObjects> dirOb)
         {
-            string sortingType = _config.Sort;
-            switch (sortingType)
+            //TODO: --3-- Has to be a better way to clean this up without so much redundant code...
+            string sortingType = _config.SortingType;
+            string sortingDirection = _config.SortingDirection;
+
+            if (sortingDirection == "Ascending")
             {
-                case "Name":
-                    dirOb = dirOb.OrderBy(ms => ms.name).ToList();
-                    break;
-                case "File Path":
-                    dirOb = dirOb.OrderBy(ms => ms.path).ToList();
-                    break;
-                case "File Type":
-                    dirOb = dirOb.OrderBy(ms => ms.type).ToList();
-                    break;
-            }//finds which is checked and updates the list to match the new format
-            Log("Sorting type: " + sortingType);
+                switch (sortingType)
+                {
+                    //TODO: --2-- have a radio button in a group box, read from the config file, that determines if it'll be in ascending or descending order
+                    case "File Name":
+                        dirOb = dirOb.OrderBy(ms => ms.name).ToList();
+                        break;
+                    case "File Path":
+                        dirOb = dirOb.OrderBy(ms => ms.path).ToList();
+                        break;
+                    case "File Size":
+                        dirOb = dirOb.OrderBy(ms => ms.size).ToList();
+                        break;
+                    case "File Type":
+                        dirOb = dirOb.OrderBy(ms => ms.type).ToList();
+                        break;
+                }//finds which is checked and updates the list to match the new format
+            }
+            else
+            {
+                switch (sortingType)
+                {
+                    //TODO: --2-- have a radio button in a group box, read from the config file, that determines if it'll be in ascending or descending order
+                    case "File Name":
+                        dirOb = dirOb.OrderByDescending(ms => ms.name).ToList();
+                        break;
+                    case "File Path":
+                        dirOb = dirOb.OrderByDescending(ms => ms.path).ToList();
+                        break;
+                    case "File Size":
+                        dirOb = dirOb.OrderByDescending(ms => ms.size).ToList();
+                        break;
+                    case "File Type":
+                        dirOb = dirOb.OrderByDescending(ms => ms.type).ToList();
+                        break;
+                }//finds which is checked and updates the list to match the new format
+            }
+            Log($"Sort: {sortingType}, {sortingDirection}");
             return dirOb;
         }//Sorts the List
 
