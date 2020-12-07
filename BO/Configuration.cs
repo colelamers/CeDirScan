@@ -1,11 +1,10 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     public class Configuration
     {
-        //TODO: --1-- the XML serialization stuff should be in it's own file and the sorting things should be in their own config object file
         public string DirectoryPath { get; set; }
         public string SortingType { get; set; }
         public string SortingDirection { get; set; }
@@ -23,11 +22,6 @@ namespace DirectoryScanner
             }
 
         }//When called, saves the parameters set at that time from the config file
-
-        public void GetConfigFileName()
-        {
-            //TODO: --4-- figure out how to get the file name here? likely for when i move stuff over into a custom dll for configs
-        }
 
         public static Configuration LoadFromFile(string fileName)
         {

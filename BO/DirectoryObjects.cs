@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     public class DirectoryObjects
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     public partial class DirectoryScanner : Form
     {
@@ -19,6 +19,7 @@ namespace DirectoryScanner
 
         private void btnGo_Click(object sender, EventArgs e)
         {
+            Log("Go Button Clicked");
             _config.DirectoryPath = tbDirectory.Text;
             _config.SortingType = gbSortingOptions.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
             _config.SortingDirection = gbSortAscDesc.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Text;
@@ -68,6 +69,7 @@ namespace DirectoryScanner
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
+            Log("Browse button Clicked");
             using (var fileDialog = new FolderBrowserDialog())
             {
                 fileDialog.SelectedPath = "c:\\"; //sets the default path for the browser to open
@@ -81,6 +83,7 @@ namespace DirectoryScanner
         private void Log(string log)
         {
             DebugLogging.LogActivity(log);
+            tsslStatus.Text = $"{DateTime.Now:yyyymmdd-HHMMss} {log}";
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace DirectoryScanner
+﻿namespace CeDirScan
 {
     partial class DirectoryScanner
     {

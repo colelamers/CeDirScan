@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     /*
      * Created by Cole Lamers 
@@ -26,11 +26,11 @@ namespace DirectoryScanner
         public static void CreateDebugLogger()
         {
             LogFilePath = @"..\Debug\Logs\";
-            LogFileName = $"{DateTime.Now.ToString("yyyyMMdd")}_Log.txt";
+            LogFileName = $"{DateTime.Now:yyyyMMdd}_Log.txt";
             LogFilePathAndName = Path.Combine(LogFilePath, LogFileName);
 
             if (!Directory.Exists(LogFilePath))
-            {
+            {//TODO: --2-- need to fix this so that it doesn't check if a directory exist but it just makes it instead.
                 Directory.CreateDirectory(LogFilePath);
             }//creates the log directory if it doesn't exist
 

@@ -7,7 +7,7 @@
     <ProjectGuid>{33CC6574-D143-419A-A420-B3B3529DDA0F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>CeDirScan</RootNamespace>
-    <AssemblyName>CeDirScanV0.A.2</AssemblyName>
+    <AssemblyName>CeDirScan</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,6 +59,9 @@
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
+    <Reference Include="EPPlus">
+      <HintPath>B:\Programming\C# Libraries\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -76,6 +79,7 @@
     <Compile Include="BLL\DebugLogging.cs" />
     <Compile Include="BO\Configuration.cs" />
     <Compile Include="BO\DirectoryObjects.cs" />
+    <Compile Include="DAL\ExcelFunctions.cs" />
     <Compile Include="DirectoryScanner.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,7 +116,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
-    <Folder Include="DAL\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="code-19052_960_720.ico" />

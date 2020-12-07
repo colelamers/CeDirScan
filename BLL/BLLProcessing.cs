@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using OfficeOpenXml;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     public class BLLProcessing
     {
@@ -24,7 +25,6 @@ namespace DirectoryScanner
             try
             {
                 List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
-
 
                 List<string> subDirs = Directory.GetDirectories(_config.DirectoryPath).Select(d => new { Attr = new DirectoryInfo(d).Attributes, Dir = d })
                       .Where(x => !x.Attr.HasFlag(FileAttributes.System))
@@ -68,7 +68,7 @@ namespace DirectoryScanner
         public void StartProcessing()
         {
             dirObjList.Clear();
-            dirObjList = ScanDirectory();
+            dirObjList = ScanDirectory(); //TODO: --1-- might be better to throw in a datatable. Exports out in csv but files contain commas! size = file in kb
 
             try
             {

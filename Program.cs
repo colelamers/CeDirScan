@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace DirectoryScanner
+namespace CeDirScan
 {
     static class Program
     {
