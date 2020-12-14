@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using OfficeOpenXml;
 
 namespace CeDirScan
 {
@@ -11,12 +10,11 @@ namespace CeDirScan
     {
         Configuration _config;
 
-
         List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
-            _config = Configuration.LoadFromFile("configuration.xml"); //TODO: --1-- need to get this to be created on the constructor here 
-            //TODO: --3-- Figure out someway to make my own DLL for debuglogging and xml serialization
+            //TODO: --3-- At some point, try to get my ProjectLogging DLL imported and use that instead of this hardcoded stuff
+            _config = Configuration.LoadFromFile("configuration.xml");
         }
 
         private List<DirectoryObjects> ScanDirectory()
@@ -24,51 +22,68 @@ namespace CeDirScan
             Log("Scanning Directory");
             try
             {
-                List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
-
+                //Gets a list of all directories except for hidden files/folders
                 List<string> subDirs = Directory.GetDirectories(_config.DirectoryPath).Select(d => new { Attr = new DirectoryInfo(d).Attributes, Dir = d })
                       .Where(x => !x.Attr.HasFlag(FileAttributes.System))
                       .Where(x => !x.Attr.HasFlag(FileAttributes.Hidden))
                       .Select(x => x.Dir)
                       .ToList();
-                //Gets a list of all directories except for hidden files
 
-                foreach (string dir in subDirs)
+                List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
+
+                if (subDirs.Count > 0)
                 {
-
-                    List<string> filesInDirectory = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories).ToList();
-                    //Directory.GetFiles(...) returns only files, it does not get the directories. Directory.GetFileSystemEntries returns all folders too
-
-                    foreach (string file in filesInDirectory)
+                    foreach (string dir in subDirs)
                     {
-                        DirectoryObjects dirObj = new DirectoryObjects();
-                        FileInfo n = new FileInfo(file);
-                        dirObj.type = Path.GetExtension(file);
-                        dirObj.path = Path.GetDirectoryName(file);
-                        dirObj.name = Path.GetFileNameWithoutExtension(file);
-                        dirObj.size = dirObj.getSizeOnDisk(n.Length.ToString());
-                        dirObjList.Add(dirObj);
-                    }//Gets the directory object and adds it to the list
-                }//for every directory in the list
+                        List<string> filesInDirectory = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories).ToList();
+                        CreateObjectAndFillList(dirObjList, filesInDirectory);
+                    }
+                }//Gets all files in a list of directories
+                else
+                {
+                    List<string> filesInPath = Directory.GetFiles(_config.DirectoryPath).ToList();
+                    CreateObjectAndFillList(dirObjList, filesInPath);
+                }//Gets all files in a directory that has no subdirectories
 
-                //TODO: --2-- If subDirs.Count == 0, then scan only files in list
-                dirObjList = SortList(dirObjList); //sorts the list
+                //sorts the list
+                dirObjList = SortList(dirObjList);
 
                 return dirObjList;
-
             }
             catch (Exception ex)
             {
-                //TODO: --1-- need to revise code so that when an access denied occurs, it just skips that file instead of stopping the whole program
+                //TODO: --2-- need to revise code so that when an access denied occurs, it just skips that file instead of stopping the whole program
                 Log($"Error: {ex}");
                 return dirObjList;
             }
         }
+        /// <summary>
+        /// This passes in two lists and adds the files from one to the other
+        /// </summary>
+        /// <param name="dirObjList"> List of Directory Objects; Files</param>
+        /// <param name="filesInDirectory"> List of files in a specific directory</param>
+        private void CreateObjectAndFillList(List<DirectoryObjects> dirObjList, List<string> filesInDirectory)
+        {
+            foreach (string file in filesInDirectory)
+            {
+                DirectoryObjects dirObj = new DirectoryObjects();
+                FileInfo n = new FileInfo(file);
+                dirObj.type = Path.GetExtension(file);
+                dirObj.path = Path.GetDirectoryName(file);
+                dirObj.name = Path.GetFileNameWithoutExtension(file);
+                dirObj.size = dirObj.getSizeOnDisk(n.Length.ToString());
+                dirObjList.Add(dirObj);
+            }
+        }//Builds Directory Objects and adds them to a list
 
+        /// <summary>
+        /// Beginning of the processing functions being performed
+        /// </summary>
         public void StartProcessing()
         {
             dirObjList.Clear();
-            dirObjList = ScanDirectory(); //TODO: --1-- might be better to throw in a datatable. Exports out in csv but files contain commas! size = file in kb
+            dirObjList = ScanDirectory(); 
+            //TODO: --1-- Think about putting into a datatable and returning an excel file
 
             try
             {
@@ -85,7 +100,7 @@ namespace CeDirScan
                         }
                         streamWriter.Close();
                     }
-                }
+                }//Saves the file
             }
             catch (Exception ex)
             {
@@ -93,19 +108,21 @@ namespace CeDirScan
                 Log($"Error: {ex}");
             }
         }
-
-
+        /// <summary>
+        /// Sorts the list based off the parameter set in the xml config file
+        /// </summary>
+        /// <param name="dirOb">The list of collected directory files and their data</param>
+        /// <returns></returns>
         private List<DirectoryObjects> SortList(List<DirectoryObjects> dirOb)
         {
-            //TODO: --3-- Has to be a better way to clean this up without so much redundant code...
             string sortingType = _config.SortingType;
             string sortingDirection = _config.SortingDirection;
 
+            //TODO: --2-- possible to revise the if/else statement below to not be as redundant?
             if (sortingDirection == "Ascending")
             {
                 switch (sortingType)
                 {
-                    //TODO: --2-- have a radio button in a group box, read from the config file, that determines if it'll be in ascending or descending order
                     case "File Name":
                         dirOb = dirOb.OrderBy(ms => ms.name).ToList();
                         break;
@@ -124,7 +141,6 @@ namespace CeDirScan
             {
                 switch (sortingType)
                 {
-                    //TODO: --2-- have a radio button in a group box, read from the config file, that determines if it'll be in ascending or descending order
                     case "File Name":
                         dirOb = dirOb.OrderByDescending(ms => ms.name).ToList();
                         break;
@@ -143,11 +159,13 @@ namespace CeDirScan
             return dirOb;
         }//Sorts the List
 
+        /// <summary>
+        /// Performs data logging to the debuglogging file
+        /// </summary>
+        /// <param name="log"></param>
         private void Log(string log)
         {
             DebugLogging.LogActivity(log);
         }
-
-
     }
 }
