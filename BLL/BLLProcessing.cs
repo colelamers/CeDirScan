@@ -6,10 +6,22 @@ using System.Windows.Forms;
 
 namespace CeDirScan
 {
+ /*
+ * Created by Cole Lamers 
+ * Date: 2020-11-28
+ * 
+ * == Purpose ==
+ * This code handles the processing for the directory scanner
+ * 
+ * Changes: (date,  comment)
+ * 2020-12-21,  Discovered there was a duplicate dirObjList so file contents were being added to two
+ *              separate object lists. Removed the redundant one.
+ * 
+ */
+
     public class BLLProcessing
     {
         Configuration _config;
-
         List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
         public BLLProcessing()
         {
@@ -28,8 +40,6 @@ namespace CeDirScan
                       .Where(x => !x.Attr.HasFlag(FileAttributes.Hidden))
                       .Select(x => x.Dir)
                       .ToList();
-
-                List<DirectoryObjects> dirObjList = new List<DirectoryObjects>();
 
                 if (subDirs.Count > 0)
                 {
@@ -82,7 +92,7 @@ namespace CeDirScan
         public void StartProcessing()
         {
             dirObjList.Clear();
-            dirObjList = ScanDirectory(); 
+            dirObjList = ScanDirectory();
             //TODO: --1-- Think about putting into a datatable and returning an excel file
 
             try
